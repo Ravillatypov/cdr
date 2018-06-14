@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>отчет по звонкам</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery-3.3.1.min.js"></script>
+    <script src="../js/popper.min.js"></script>
+</head>
+<body>
+    <div class="d-flex align-content-center">
+        <h3>отчет по звонкам</h3>
+    </div>
+    <div class="d-flex align-content-center">
+        <form action="" method="get">
+            <div class="form-group">
+                <label class="col-form-label" for="from"></label>
+                <input type="date" name="from" class="form-control" id="from"
+                       value="<?= (isset($_GET['from'])) ? $_GET['from'] : date('Y-m-d');?>">
+            </div>
+            <div class="form-group">
+                <label class="col-form-label" for="to"></label>
+                <input type="date" name="to" class="form-control" id="to"
+                       value="<?= (isset($_GET['to'])) ? $_GET['to'] : date('Y-m-d');?>">
+            </div>
+            <button type="submit" class="btn-primary btn">показать</button>
+        </form>
+    </div>
+
+    <div class="d-flex align-content-center">
+        <?php foreach ($callGroups as $group): ?>
+        <?= include("callgroup.phtml") ;?>
+        <?php endforeach;?>
+    </div>
+</body>
+</html>
