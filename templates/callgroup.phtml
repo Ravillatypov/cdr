@@ -1,0 +1,19 @@
+
+<div class="card border-<?= ($group->status) ? 'success' : 'warning'; ?>">
+    <div class="card-header">
+        <?= $group->externalNumber; ?>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+        <?php foreach ($group->calls as $call):?>
+        <tr class="<?= ($call->status) ? 'bg-success text-white': 'bg-light text-warning'; ?>">
+            <td><?= $call->calldate; ?></td>
+            <td><?= $call->srcNumber; ?></td>
+            <td><?= $call->dstNumber; ?></td>
+            <td><?= $call->duration; ?></td>
+            <td><audio class="media" controls src="records/<?= $call->recordingfile;?>"></audio></td>
+        </tr>
+        <?php endforeach; ?>
+        </table>
+    </div>
+</div>
