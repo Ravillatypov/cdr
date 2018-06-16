@@ -1,4 +1,5 @@
 <?php
+require_once("call.class.php");
 class CallGroup {
     public $externalNumber = '';
     public $calls = array();

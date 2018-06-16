@@ -10,9 +10,8 @@ $numberLenght = 7;
 
 function init(){
     try {
-        $conn = new PDO("mysql:host=loca;dbname=asteriscdrdb", "root", "");
+        $conn = new PDO("mysql:host=fs.loc;dbname=asteriskcdrdb", "rk", "123123");
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        echo "Connected successfully"; 
         }
     catch(PDOException $e)
         {
@@ -22,19 +21,19 @@ function init(){
 }
 
 function loadCalls($from, $to){
-    //loadlib("src/call.class.php");
+    require_once ("src/call.class.php");
+    require_once ("src/callgroup.class.php");
     $conn = init();
     $calls = array();
     $allnumbers = array();
-    $stm = $conn->query("SELECT * FROM cdr WHERE 
+    $sql = "SELECT * FROM cdr WHERE 
         calldate >= '{$from} 00:00:00' 
         AND calldate <= '{$to} 23:59:59'
-         lastapp='Dial' GROUP BY calldate");
-    $stm->execute();
-    while ($record = $stm->fetch()){
+        AND lastapp='Dial' GROUP BY calldate";
+    foreach ($conn->query($sql, PDO::FETCH_ASSOC) as $record){
         $call = new Call();
         $call->loadFromArray($record);
-        $allnumbers[$call->getExternalNumber()] = 1;
+        $allnumbers[$call->getExternalNumber()] = "  ";
         $calls[] = $call;
     }
     return array($calls, $allnumbers);
