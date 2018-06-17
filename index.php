@@ -1,16 +1,9 @@
 <?php
 
-$didnumbers = array('123', '1234');
-$user = array(
-    "100" => "Змей Горыныч",
-    "101" => "Добрыня"
-);
-$code = '8843';
-$numberLenght = 7;
-
 function init(){
+    $conn = NULL;
     try {
-        $conn = new PDO("mysql:host=fs.loc;dbname=asteriskcdrdb", "rk", "123123");
+        $conn = new PDO("mysql:host=192.168.20.102;dbname=asteriskcdrdb", "rk", "123123");
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
     catch(PDOException $e)
@@ -23,17 +16,22 @@ function init(){
 function loadCalls($from, $to){
     require_once ("src/call.class.php");
     require_once ("src/callgroup.class.php");
+    $didnumbers = array('78432054455', '78432051228');
     $conn = init();
+    if ($conn == NULL) return [[],[]];
     $calls = array();
     $allnumbers = array();
     $sql = "SELECT * FROM cdr WHERE 
         calldate >= '{$from} 00:00:00' 
         AND calldate <= '{$to} 23:59:59'
-        AND lastapp='Dial' GROUP BY calldate";
+        AND lastapp='Dial' ORDER BY calldate";
     foreach ($conn->query($sql, PDO::FETCH_ASSOC) as $record){
+        if (in_array($record['src'], $didnumbers) || in_array($record['dst'], $didnumbers)) continue;
         $call = new Call();
         $call->loadFromArray($record);
-        $allnumbers[$call->getExternalNumber()] = "  ";
+        error_log("record: " . implode(": ", $record), 0);
+        error_log("call: $call", 0);
+        $allnumbers[$call->getExternalNumber()] = "ext";
         $calls[] = $call;
     }
     return array($calls, $allnumbers);
@@ -41,8 +39,8 @@ function loadCalls($from, $to){
 
 
 function run(){
-    $from = (isset($_GET['from']) && count($_GET['from']) > 5) ? $_GET['from'] : date('Y-m-d');
-    $to = (isset($_GET['to']) && count($_GET['to']) > 5) ? $_GET['to'] : date('Y-m-d');
+    $from = (isset($_GET['from'])) ? $_GET['from'] : date('Y-m-d');
+    $to = (isset($_GET['to'])) ? $_GET['to'] : date('Y-m-d');
     $callsResult = loadCalls($from, $to);
     $callGroups = array();
     foreach ($callsResult[1] as $key => $val) {

@@ -7,29 +7,47 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/popper.min.js"></script>
+    <script>
+        function bodyDisplay(id) {
+            var img = document.getElementById(id + '_img');
+            var state = 'none';
+            var imgpath = img.src.split('/');
+            if (imgpath[imgpath.length - 1] == 'closed.png'){
+                state = 'block';
+                imgpath[imgpath.length - 1] = 'opened.png';
+            } else {
+                imgpath[imgpath.length - 1] = 'closed.png';
+            }
+            document.getElementById(id).style.display = state;
+            img.src = imgpath.join('/');
+        }
+        function showplay(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+    </script>
 </head>
 <body>
-    <div class="d-flex align-content-center">
-        <h3>отчет по звонкам</h3>
-    </div>
-    <div class="d-flex align-content-center">
+    <h3 class="text-center">Отчет по звонкам</h3>
+    <div class="container">
         <form action="" method="get">
-            <div class="form-group">
-                <label class="col-form-label" for="from"></label>
-                <input type="date" name="from" class="form-control" id="from"
-                       value="<?= (isset($_GET['from'])) ? $_GET['from'] : date('Y-m-d');?>">
+            <div class="row">
+                <div class="form-group col-auto">
+                    <label class="col-form-label" for="from">С:</label>
+                    <input type="date" name="from" class="form-control" id="from"
+                           value="<?= (isset($_GET['from'])) ? $_GET['from'] : date('Y-m-d');?>">
+                </div>
+                <div class="form-group col-auto">
+                    <label class="col-form-label" for="to">По:</label>
+                    <input type="date" name="to" class="form-control" id="to"
+                           value="<?= (isset($_GET['to'])) ? $_GET['to'] : date('Y-m-d');?>">
+                </div>
             </div>
-            <div class="form-group">
-                <label class="col-form-label" for="to"></label>
-                <input type="date" name="to" class="form-control" id="to"
-                       value="<?= (isset($_GET['to'])) ? $_GET['to'] : date('Y-m-d');?>">
-            </div>
-            <button type="submit" class="btn-primary btn">показать</button>
+            <button type="submit" class="btn-primary btn btn-sm">показать</button>
         </form>
     </div>
     <div class="container">
         <?php foreach ($callGroups as $group): ?>
-        <?= include("callgroup.phtml") ; ?>
+        <?php include("callgroup.phtml");?>
         <?php endforeach;?>
     </div>
 </body>
