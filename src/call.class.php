@@ -3,39 +3,65 @@
  * @package
 */
 class Call {
+    /*
+     * @var PDO
+     * */
+    public $db = NULL;
     public $calldate = NULL;
     public $srcNumber = 0;
-    public $dstNumber = 0;
-    public $duration = 0;
-    public $recordingfile = '';
+    /**
+     * dstlist array("dst1", "dst2")
+    */
+    public $dstlist = array();
     public $status = false;
+    public $dstNumber = '';
+    public $recordingfile = '';
+    public $duration = '';
+    public $did = '';
     public $code = '';
     public $minlength = 0;
 
-    public function __construct($code='8843')
+    /** @param dbconn PDO */
+    public function __construct($dbconn, $code='8843')
     {
         $this->code = $code;
-        $this->minlength = 11 - count($code);
+        $this->minlength = 11 - strlen($code);
+        $this->db = $dbconn;
     }
 
     /**
      * @param array
-     * @return bool
     */
-    public function loadFromArray($arr)
+    public function loadFromArray($records)
     {
-        $this->calldate = (isset($arr['calldate'])) ? $arr['calldate'] : NULL;
-        $this->duration = (isset($arr['billsec'])) ? $arr['billsec'] : '';
-        $this->recordingfile = (isset($arr['recordingfile'])) ? $arr['recordingfile'] : '';
-        $this->status = ($this->duration > 2) ? true : false;
+        foreach ($records as $record) {
+            $this->calldate = (isset($record['calldate'])) ? $record['calldate'] : NULL;
+            $this->srcNumber = (isset($record['src'])) ? $this->__getNumber($record['src']) : '';
+            $this->status = ($record['billsec'] > 2) ? true : false;
+            if ($this->status) {
+                $this->recordingfile = (isset($record['recordingfile'])) ? $record['recordingfile'] : '';
+                $this->dstNumber = (isset($record['dst'])) ? $this->__getNumber($record['dst']) : '';
+                $this->duration = (isset($record['billsec'])) ? $record['billsec'] : 0;
+            } else {
+                $this->dstlist[] = $this->__getNumber($record['dst']);
+            }
+        }
+    }
 
-        $this->srcNumber = (isset($arr['src'])) ? $this->__getNumber($arr['src']) : '';
-        $this->dstNumber = (isset($arr['dst'])) ? $this->__getNumber($arr['dst']) : '';
+    public function loadByID($id){
+        $ids = $this->db->query("SELECT linkedid FROM cel WHERE cel.uniqueid='$id'")->fetchAll(PDO::FETCH_COLUMN);
+        $idsstr = implode(',' , $ids);
+        $sql = "SELECT cdr.* FROM cdr 
+                WHERE (uniqueid='$id' 
+                OR uniqueid IN ($idsstr))
+                AND lastapp='Dial'";
+        $this->loadFromArray($this->db->query($sql, PDO::FETCH_ASSOC));
+        return $ids;
     }
 
     private function __getNumber($text)
     {
-        $length = count($text);
+        $length = strlen($text);
         if ($length < $this->minlength)
         {
             return $text;
@@ -48,10 +74,12 @@ class Call {
         }
         return "";
     }
+
     public function getExternalNumber(){
-        if (count($this->dstNumber) > count($this->srcNumber)) return $this->dstNumber;
-        return$this->srcNumber;
+        if (strlen($this->srcNumber) > 4) return $this->srcNumber;
+        return$this->dstNumber;
     }
+
     public function  __toString()
     {
         // TODO: Implement __toString() method.
