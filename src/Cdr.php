@@ -8,6 +8,9 @@
 
 class Cdr
 {
+    /*
+     * @var PDO $conn
+     * */
     private $conn = NULL;
     public $didnumbers = array();
     public $calls = array();
@@ -26,13 +29,18 @@ class Cdr
         }
     }
 
+    /**
+     * @param $from string
+     * @param $to string
+     * @param string $external
+     * @param string $internal
+     * @return bool
+     */
     private function loadCalls($from, $to, $external='', $internal=''){
         require_once ("call.class.php");
         require_once ("callgroup.class.php");
-        if ($this->conn == NULL) return [[],[]];
-        $calls = array();
-        $allnumbers = array();
-        $wheresql = $external ? " AND did=$external" : "";
+        if ($this->conn == NULL) return false;
+        $wheresql = $external ? " AND (did=$external OR src=$external)" : "";
         $wheresql .= $internal ? " AND src=$internal" : "";
         $sql = "SELECT DISTINCT uniqueid FROM cdr WHERE 
         calldate >= '{$from} 00:00:00' 
@@ -45,6 +53,7 @@ class Cdr
             $this->allnumbers[$call->getExternalNumber()] = "ext";
             $this->calls[] = $call;
         }
+        return true;
     }
 
     private function getdids()
@@ -60,15 +69,16 @@ class Cdr
         $to = (isset($_GET['to'])) ? $_GET['to'] : date('Y-m-d');
         $internal = (isset($_GET['internal'])) ? $_GET['internal'] : '';
         $external = (isset($_GET['external'])) ? $_GET['external'] : '';
-        $callsResult = loadCalls($from, $to, $external, $internal);
+        $this->loadCalls($from, $to, $external, $internal);
         $callGroups = array();
-        foreach ($callsResult[1] as $key => $val) {
+        foreach ($this->allnumbers as $key => $val) {
+            if (!$key) continue;
             $group = new CallGroup();
             $group->setNumber($key);
-            $group->loadCalls($callsResult[0]);
+            $group->loadCalls($this->calls);
             $callGroups[] = $group;
         }
-        include("../templates/index.phtml");
+        include($_SERVER['DOCUMENT_ROOT'] . "/templates/index.phtml");
     }
 
 }

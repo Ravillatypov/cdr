@@ -6,28 +6,37 @@
              onclick="bodyDisplay('<?=$group->externalNumber;?>');"><?= $group->externalNumber; ?>
     </div>
     <div class="card-body" style="display: none" id="<?=$group->externalNumber;?>">
-        <table class="table table-bordered table-hover small border-dark" style="line-height: 0.9rem">
+        <table class="table table-bordered table-hover small border-dark"
+               style="line-height: 0.9rem">
             <tr>
-                <th>время звонка</th>
+                <th>Время звонка</th>
                 <th>А номер</th>
+                <th>Внешний номер</th>
                 <th>Б номер</th>
-                <th>длительность</th>
-                <th>запись</th>
+                <th>Длительность</th>
+                <th>Запись</th>
             </tr>
         <?php foreach ($group->calls as $call):?>
         <tr class="alert alert-<?= ($call->status) ? 'success': 'warning'; ?>">
             <td><?= $call->calldate; ?></td>
             <td><?= $call->srcNumber; ?></td>
-            <td><?= $call->dstNumber; ?></td>
-            <td><?= gmdate("i:s", $call->duration); ?></td>
-            <?php if ($call->recordingfile):?>
-            <td>
-                <?php if ($call->recordingfile != '')?>
+            <td><?= $call->did; ?></td>
+            <?php if ($call->status):?>
+                <td><?= $call->dstNumber; ?></td>
+                <td><?= gmdate("i:s", $call->duration); ?></td>
+                <td>
+                    <?php if ($call->recordingfile): ?>
                     <img src="img/play.png"
                          height="32" width="32"
                          onclick="showplay('<?= $call->recordingfile;?>');">
-                <?php endif; ?>
-            </td>
+                    <?php endif; ?>
+                </td>
+            <?php else: ?>
+                <td><?= implode(', ', array_unique($call->dstlist)); ?></td>
+                <td><?= gmdate("i:s", 0); ?></td>
+                <td>
+                    <p><?= $call->recordingfile; ?></p></td>
+            <?php endif; ?>
         </tr>
         <tr style="display: none;" id="<?= $call->recordingfile;?>">
             <td><audio class="media" controls src="records/<?= $call->recordingfile;?>"></audio></td>
