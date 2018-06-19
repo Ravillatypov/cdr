@@ -33,9 +33,10 @@
                 <td><?= gmdate("i:s", $call->duration); ?></td>
                 <td>
                     <?php if ($call->recordingfile): ?>
+                    <a target="_blank" href="records/<?= $path . $call->recordingfile;?>">
                     <img src="img/play.png"
-                         height="32" width="32"
-                         onclick="showplay('<?= $call->recordingfile;?>');">
+                         height="16" width="16">
+                    </a>
                     <?php endif; ?>
                 </td>
             <?php else: ?>
@@ -43,11 +44,6 @@
                 <td><?= gmdate("i:s", 0); ?></td>
                 <td></td>
             <?php endif; ?>
-        </tr>
-        <tr style="display: none;" id="<?= $call->recordingfile;?>">
-            <td  colspan="6">
-                <audio class="media" controls src="records/<?= $path . $call->recordingfile;?>"></audio>
-            </td>
         </tr>
         <?php endforeach; ?>
         </table>
