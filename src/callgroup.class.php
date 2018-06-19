@@ -22,15 +22,28 @@ class CallGroup {
         foreach($allcalls as $call){
             if ($call->srcNumber == $this->externalNumber || $call->dstNumber == $this->externalNumber){
                 if (!in_array($call->__toString(), $loaded)){
-                    $this->calls[$call->__toString()] = $call;
+                    $this->calls[] = $call;
                     $loaded[] = $call->__toString();
-                    $this->status = $call->status;
                 } else {
-                    $this->calls[$call->__toString()] = $this->calls[$call->__toString()]->merge($call);
-                    $this->status = $call->status;
+                    $this->merge($call);
                 }
             }
         }
+        $last = count($this->calls)-1;
+        if ($last > -1) {
+            $this->status = $this->calls[$last]->status;
+        }
         return true;
+    }
+    /*
+     * @param Call $newcall
+     * */
+    private function merge($newcall){
+        foreach ($this->calls as $key => $gcall) {
+            if ($gcall->__toStrings() == $newcall->__toString()){
+                $this->calls[$key] = $newcall->merge($gcall);
+                    $this->status = $newcall->status;
+            }
+        }
     }
 }

@@ -41,6 +41,30 @@
                     <input type="date" name="to" class="form-control" id="to"
                            value="<?= (isset($_GET['to'])) ? $_GET['to'] : date('Y-m-d');?>">
                 </div>
+                <div class="col-auto">
+                    <label class="col-form-label" for="ext">Внешний номер:</label>
+                    <select class="custom-select" name="external" id="ext">
+                        <option value="0">все</option>
+                        <?php foreach ($dids as $did): ?>
+                        <option value="<?= $did; ?>"
+                            <?= (isset($_GET['external']) && ($_GET['external'] == $did)) ? 'selected' : ''?>>
+                            <?= $did; ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="col-form-label" for="int">Внутренний номер:</label>
+                    <select class="custom-select" name="internal" id="int">
+                        <option value="0">все</option>
+                        <?php foreach ($intertnals as $internal): ?>
+                            <option value="<?= $internal; ?>"
+                        <?= (isset($_GET['internal']) && ($_GET['internal'] == $internal)) ? 'selected' : ''?>>
+                                <?= $internal; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
             <button type="submit" class="btn-primary btn btn-sm">показать</button>
         </form>

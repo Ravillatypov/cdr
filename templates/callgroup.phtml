@@ -17,6 +17,13 @@
                 <th>Запись</th>
             </tr>
         <?php foreach ($group->calls as $call):?>
+            <?php
+                $path = "";
+                if ($call->recordingfile){
+                    $time = strtotime($call->calldate);
+                    $path = date("Y/m/d/", $time);
+                }
+            ?>
         <tr class="alert alert-<?= ($call->status) ? 'success': 'warning'; ?>">
             <td><?= $call->calldate; ?></td>
             <td><?= $call->srcNumber; ?></td>
@@ -34,12 +41,13 @@
             <?php else: ?>
                 <td><?= implode(', ', array_unique($call->dstlist)); ?></td>
                 <td><?= gmdate("i:s", 0); ?></td>
-                <td>
-                    <p><?= $call->recordingfile; ?></p></td>
+                <td></td>
             <?php endif; ?>
         </tr>
         <tr style="display: none;" id="<?= $call->recordingfile;?>">
-            <td><audio class="media" controls src="records/<?= $call->recordingfile;?>"></audio></td>
+            <td  colspan="6">
+                <audio class="media" controls src="records/<?= $path . $call->recordingfile;?>"></audio>
+            </td>
         </tr>
         <?php endforeach; ?>
         </table>
