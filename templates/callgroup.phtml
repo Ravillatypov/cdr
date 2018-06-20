@@ -1,11 +1,11 @@
 
-<div class="card border-<?= ($group->status) ? 'success' : 'warning'; ?>">
-    <div class="card-header text-center bg-<?= ($group->status) ? 'success text-white' : 'warning text-dark'; ?>">
-        <img id="<?=$group->externalNumber;?>_img" src="img/closed.png"
+<div class="card border-<?php echo  ($group->status) ? 'success' : 'warning'; ?>">
+    <div class="card-header text-center bg-<?php echo  ($group->status) ? 'success text-white' : 'warning text-dark'; ?>">
+        <img id="<?php echo $group->externalNumber;?>_img" src="img/closed.png"
              height="32" width="32"
-             onclick="bodyDisplay('<?=$group->externalNumber;?>');"><?= $group->externalNumber; ?>
+             onclick="bodyDisplay('<?php echo $group->externalNumber;?>');"><?php echo  $group->externalNumber; ?>
     </div>
-    <div class="card-body" style="display: none" id="<?=$group->externalNumber;?>">
+    <div class="card-body" style="display: none" id="<?php echo $group->externalNumber;?>">
         <table class="table table-bordered table-hover small border-dark"
                style="line-height: 0.9rem">
             <tr>
@@ -24,24 +24,24 @@
                     $path = date("Y/m/d/", $time);
                 }
             ?>
-        <tr class="alert alert-<?= ($call->status) ? 'success': 'warning'; ?>">
-            <td><?= $call->calldate; ?></td>
-            <td><?= $call->srcNumber; ?></td>
-            <td><?= $call->did; ?></td>
+        <tr class="alert alert-<?php echo  ($call->status) ? 'success': 'warning'; ?>">
+            <td><?php echo  $call->calldate; ?></td>
+            <td><?php echo  $call->srcNumber; ?></td>
+            <td><?php echo  $call->did; ?></td>
             <?php if ($call->status):?>
-                <td><?= $call->dstNumber; ?></td>
-                <td><?= gmdate("i:s", $call->duration); ?></td>
+                <td><?php echo  $call->dstNumber; ?></td>
+                <td><?php echo  gmdate("i:s", $call->duration); ?></td>
                 <td>
                     <?php if ($call->recordingfile): ?>
-                    <a target="_blank" href="records/<?= $path . $call->recordingfile;?>">
+                    <a target="_blank" href="records/<?php echo  $path . $call->recordingfile;?>">
                     <img src="img/play.png"
                          height="16" width="16">
                     </a>
                     <?php endif; ?>
                 </td>
             <?php else: ?>
-                <td><?= implode(', ', array_unique($call->dstlist)); ?></td>
-                <td><?= gmdate("i:s", 0); ?></td>
+                <td><?php echo  implode(', ', array_unique($call->dstlist)); ?></td>
+                <td><?php echo  gmdate("i:s", 0); ?></td>
                 <td></td>
             <?php endif; ?>
         </tr>
