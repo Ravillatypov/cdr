@@ -40,7 +40,7 @@ class CallGroup {
      * */
     private function merge($newcall){
         foreach ($this->calls as $key => $gcall) {
-            if ($gcall->__toStrings() == $newcall->__toString()){
+            if ($gcall->__toString() == $newcall->__toString()){
                 $this->calls[$key] = $newcall->merge($gcall);
                     $this->status = $newcall->status;
             }

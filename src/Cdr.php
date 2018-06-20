@@ -22,8 +22,9 @@ class Cdr
     public function __construct($mdsn, $user, $pass){
         try {
             $this->conn = new PDO($mdsn, $user, $pass);
+            $len = strlen($mdsn);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->freepbx = new PDO("mysql:host=192.168.20.102;dbname=asterisk", $user, $pass);
+            $this->freepbx = new PDO(substr($mdsn,0,$len-5), $user, $pass);
             $this->freepbx->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->loadsipusers();
         }
