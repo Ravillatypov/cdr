@@ -97,4 +97,17 @@ class Call {
         return "date: $this->calldate  src: $this->srcNumber";
     }
 
+    /*
+     * @param Call $other
+     * @return Call
+     */
+    public function merge($other){
+        $this->dstlist = array_merge($this->dstlist, $other->dstlist);
+        $this->status = $this->status ? $this->status : $other->status;
+        $this->dstNumber = $this->status ? $this->dstNumber : $other->dstNumber;
+        $this->did = $this->did ? $this->did : $other->did;
+        $this->duration = $this->duration ? $this->duration : $other->duration;
+        $this->recordingfile = $this->recordingfile ? $this->recordingfile : $other->recordingfile;
+        return $this;
+    }
 }
