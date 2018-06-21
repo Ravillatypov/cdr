@@ -55,25 +55,38 @@ class Cdr
         } elseif ($external) {
             $wheresql = " AND $extsql";
         }
-        $sql = "SELECT DISTINCT uniqueid FROM cdr WHERE 
-        calldate >= '{$from} 00:00:00' 
-        AND calldate <= '{$to} 23:59:59' $wheresql";
+        $sql = "SELECT * FROM cdr WHERE 
+            lastapp IN ('Dial', 'Queue') 
+            AND dstchannel NOT LIKE 'Local/FMGL%' 
+            AND calldate >= '{$from} 00:00:00' 
+            AND calldate <= '{$to} 23:59:59' $wheresql 
+            ORDER BY calldate";
         $loadedIDs = array();
-        foreach ($this->conn->query($sql)->fetchAll(PDO::FETCH_COLUMN) as $record){
-            if (in_array($record, $loadedIDs)) continue;
+        $records = array();
+        foreach ($this->conn->query($sql,PDO::FETCH_ASSOC) as $record){
+            if (strlen($record['src']) > 4 && strlen($record['dst']) > 4) continue;
+            $id = $record['calldate'] . $record['src'];
+            if (!in_array($id, $loadedIDs)) {
+                $records[$id] = array();
+                $loadedIDs[] = $id;
+            }
+            $records[$id][] = $record;
+        }
+        foreach ($records as $record) {
             $call = new Call($this->conn);
-            $loadedIDs[] = $call->loadByID($record);
+            $call->loadFromArray($record);
             $this->allnumbers[$call->getExternalNumber()] = "ext";
             $this->calls[] = $call;
         }
         return true;
     }
 
-    private function loadsipusers()
-    {
+    private function loadsipusers() {
         $sql = "SELECT data FROM sip WHERE keyword='account' AND id IN 
 			(SELECT id FROM sip WHERE keyword='context' AND data LIKE 'from-intern%')";
             $this->internals = $this->freepbx->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+
+
         $sql = "SELECT data FROM sip WHERE keyword='account' 
                   AND id IN (SELECT id FROM sip WHERE keyword='fromdomain' AND data != '')";
         $this->didnumbers = $this->freepbx->query($sql)->fetchAll(PDO::FETCH_COLUMN);
@@ -97,7 +110,7 @@ class Cdr
         }
         $intertnals = $this->internals;
         $dids = $this->didnumbers;
-        include($_SERVER['DOCUMENT_ROOT'] . "/templates/index.phtml");
+        include(dirname(__DIR__) . "/templates/index.phtml");
     }
 
 }

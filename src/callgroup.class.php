@@ -20,7 +20,9 @@ class CallGroup {
         if ($this->externalNumber == '') return false;
         $loaded = array();
         foreach($allcalls as $call){
-            if ($call->srcNumber == $this->externalNumber || $call->dstNumber == $this->externalNumber){
+            if ($call->srcNumber == $this->externalNumber ||
+                $call->dstNumber == $this->externalNumber ||
+                in_array($this->externalNumber, $call->dstlist)){
                 if (!in_array($call->__toString(), $loaded)){
                     $this->calls[] = $call;
                     $loaded[] = $call->__toString();

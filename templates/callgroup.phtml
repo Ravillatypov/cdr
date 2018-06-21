@@ -1,9 +1,9 @@
 
 <div class="card border-<?php echo  ($group->status) ? 'success' : 'warning'; ?>">
-    <div class="card-header text-center bg-<?php echo  ($group->status) ? 'success text-white' : 'warning text-dark'; ?>">
+    <div class="card-header text-center bg-<?php echo  ($group->status) ? 'success text-white' : 'warning text-dark'; ?>"
+         onclick="bodyDisplay('<?php echo $group->externalNumber;?>');">
         <img id="<?php echo $group->externalNumber;?>_img" src="img/closed.png"
-             height="32" width="32"
-             onclick="bodyDisplay('<?php echo $group->externalNumber;?>');"><?php echo  $group->externalNumber; ?>
+             height="32" width="32"><?php echo  $group->externalNumber; ?>
     </div>
     <div class="card-body" style="display: none" id="<?php echo $group->externalNumber;?>">
         <table class="table table-bordered table-hover small border-dark"
