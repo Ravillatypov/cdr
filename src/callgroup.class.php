@@ -26,8 +26,6 @@ class CallGroup {
                 if (!in_array($call->__toString(), $loaded)){
                     $this->calls[] = $call;
                     $loaded[] = $call->__toString();
-                } else {
-                    $this->merge($call);
                 }
             }
         }
@@ -36,16 +34,5 @@ class CallGroup {
             $this->status = $this->calls[$last]->status;
         }
         return true;
-    }
-    /*
-     * @param Call $newcall
-     * */
-    private function merge($newcall){
-        foreach ($this->calls as $key => $gcall) {
-            if ($gcall->__toString() == $newcall->__toString()){
-                $this->calls[$key] = $newcall->merge($gcall);
-                    $this->status = $newcall->status;
-            }
-        }
     }
 }

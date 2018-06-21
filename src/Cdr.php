@@ -41,25 +41,15 @@ class Cdr
      * @param string $internal
      * @return bool
      */
-    private function loadCalls($from, $to, $external='', $internal=''){
+    private function loadCalls($from, $to, $external='0', $internal='0'){
         require_once ("call.class.php");
         require_once ("callgroup.class.php");
-        $wheresql = "";
         if ($this->conn == NULL) return false;
-        $extsql = $external ? " (channel LIKE 'SIP/$external%' OR dstchannel LIKE 'SIP/$external%') " : "";
-        $intsql = $internal ? " (src=$internal OR dst=$internal) " : "";
-        if ($internal && $external) {
-            $wheresql = " AND ($extsql OR $intsql )";
-        } elseif ($internal){
-            $wheresql = " AND $intsql";
-        } elseif ($external) {
-            $wheresql = " AND $extsql";
-        }
         $sql = "SELECT * FROM cdr WHERE 
             lastapp IN ('Dial', 'Queue') 
             AND dstchannel NOT LIKE 'Local/FMGL%' 
             AND calldate >= '{$from} 00:00:00' 
-            AND calldate <= '{$to} 23:59:59' $wheresql 
+            AND calldate <= '{$to} 23:59:59'  
             ORDER BY calldate";
         $loadedIDs = array();
         $records = array();
@@ -73,10 +63,18 @@ class Cdr
             $records[$id][] = $record;
         }
         foreach ($records as $record) {
-            $call = new Call($this->conn);
+            $call = new Call();
             $call->loadFromArray($record);
-            $this->allnumbers[$call->getExternalNumber()] = "ext";
-            $this->calls[] = $call;
+            //if ($external == '0' && $internal == '0'){
+                $this->calls[] = $call;
+                $this->allnumbers[$call->getExternalNumber()] = "ext";
+//            } elseif ($external != '0' && $external == $call->did) {
+//                $this->calls[] = $call;
+//                $this->allnumbers[$call->getExternalNumber()] = "ext";
+//            } elseif ($internal != '0' && $call->isInternalNumber($internal)) {
+//                $this->calls[] = $call;
+//                $this->allnumbers[$call->getExternalNumber()] = "ext";
+//            }
         }
         return true;
     }

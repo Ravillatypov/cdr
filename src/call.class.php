@@ -1,12 +1,7 @@
 <?php
-/**
- * @package
-*/
+
+
 class Call {
-    /*
-     * @var PDO $db
-     * */
-    public $db = NULL;
     public $calldate = NULL;
     public $srcNumber = 0;
     /**
@@ -23,13 +18,11 @@ class Call {
 
     /**
      * @param string $code
-     * @param PDO $dbconn
      */
-    public function __construct($dbconn, $code='8843')
+    public function __construct($code='8843')
     {
         $this->code = $code;
         $this->minlength = 11 - strlen($code);
-        $this->db = $dbconn;
     }
 
     /**
@@ -39,17 +32,17 @@ class Call {
     {
         foreach ($records as $record) {
             if ($record['lastapp'] == 'Dial') {
-                $this->srcNumber = (!$this->srcNumber) ? $this->__getNumber($record['src']) : '';
+                $this->srcNumber = (!$this->srcNumber) ? $this->__getNumber($record['src']) : $this->srcNumber;
 
-                if (!$this->did) {
+                if (!$this->did  && substr($record['dstchannel'],0, 4) == 'SIP/') {
                     $dstchanend = strpos($record['dstchannel'], '-');
                     $this->did = substr($record['dstchannel'], 4, $dstchanend-4);
                 }
 
-                $this->calldate = (isset($record['calldate'])) ? $record['calldate'] : NULL;
+                $this->calldate = (isset($record['calldate'])) ? $record['calldate'] : $this->calldate;
                 $this->status = ($record['billsec'] > 2) ? true : $this->status;
                 if ($this->status) {
-                    $this->dstNumber = (isset($record['dst'])) ? $this->__getNumber($record['dst']) : '';
+                    $this->dstNumber = (isset($record['dst'])) ? $this->__getNumber($record['dst']) : $this->dstNumber;
                     if ($this->duration < $record['billsec']) {
                         $this->recordingfile = (isset($record['recordingfile'])) ? $record['recordingfile'] : $this->recordingfile;
                         $this->duration = $record['billsec'];
@@ -90,6 +83,11 @@ class Call {
         return "";
     }
 
+    public function isInternalNumber($inter){
+        if ($this->srcNumber == $inter) return true;
+        if ($this->dstNumber == $inter) return true;
+        return in_array($inter, $this->dstlist);
+    }
     /*
      * @return string
      * */
