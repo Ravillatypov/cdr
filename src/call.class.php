@@ -36,18 +36,18 @@ class Call {
 
                 if (substr($record['dstchannel'],0, 4) == 'SIP/') {
                     $dstchanend = strpos($record['dstchannel'], '-');
-                    $did = substr($record['dstchannel'], 4, $dstchanend-4);
-                    $this->did = strlen($did) > strlen($this->did) ? $did : $this->did;
+                    if ($dstchanend) {
+                        $did = substr($record['dstchannel'], 4, $dstchanend - 4);
+                        $this->did = strlen($did) > strlen($this->did) ? $did : $this->did;
+                    }
                 }
 
                 $this->calldate = (isset($record['calldate'])) ? $record['calldate'] : $this->calldate;
+                $this->recordingfile = strlen(trim($record['recordingfile'])) > strlen($this->recordingfile) ? trim($record['recordingfile']) : $this->recordingfile;
                 $this->status = ($record['billsec'] > 2) ? true : $this->status;
                 if ($this->status) {
                     $this->dstNumber = (isset($record['dst'])) ? $this->__getNumber($record['dst']) : $this->dstNumber;
-                    if ($this->duration < $record['billsec']) {
-                        $this->recordingfile = (isset($record['recordingfile'])) ? $record['recordingfile'] : $this->recordingfile;
-                        $this->duration = $record['billsec'];
-                    }
+                    $this->duration = $this->duration < $record['billsec'] ? $record['billsec'] : $this->duration;
                 } else {
                     $this->dstlist[] = $this->__getNumber($record['dst']);
                 }
@@ -55,6 +55,14 @@ class Call {
                 $dstchanend = strpos($record['channel'], '-');
                 $did =  substr($record['channel'], 4, $dstchanend-4);
                 $this->did = strlen($did) > strlen($this->did) ? $did : $this->did;
+            }
+
+            if (substr($record['lastdata'],0, 4) == 'SIP/') {
+                $dstchanend = strpos($record['lastdata'], '/', 4);
+                if ($dstchanend) {
+                    $did = substr($record['lastdata'], 4, $dstchanend - 4);
+                    $this->did = strlen($did) > strlen($this->did) ? $did : $this->did;
+                }
             }
         }
         $this->dstlist = array_unique($this->dstlist);
