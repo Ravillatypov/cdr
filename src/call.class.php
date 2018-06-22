@@ -34,9 +34,10 @@ class Call {
             if ($record['lastapp'] == 'Dial') {
                 $this->srcNumber = (!$this->srcNumber) ? $this->__getNumber($record['src']) : $this->srcNumber;
 
-                if (!$this->did  && substr($record['dstchannel'],0, 4) == 'SIP/') {
+                if (substr($record['dstchannel'],0, 4) == 'SIP/') {
                     $dstchanend = strpos($record['dstchannel'], '-');
-                    $this->did = substr($record['dstchannel'], 4, $dstchanend-4);
+                    $did = substr($record['dstchannel'], 4, $dstchanend-4);
+                    $this->did = strlen($did) > strlen($this->did) ? $did : $this->did;
                 }
 
                 $this->calldate = (isset($record['calldate'])) ? $record['calldate'] : $this->calldate;
@@ -53,7 +54,7 @@ class Call {
             } elseif(substr($record['channel'],0, 4) == 'SIP/') {
                 $dstchanend = strpos($record['channel'], '-');
                 $did =  substr($record['channel'], 4, $dstchanend-4);
-                $this->did = $did;
+                $this->did = strlen($did) > strlen($this->did) ? $did : $this->did;
             }
         }
         $this->dstlist = array_unique($this->dstlist);
@@ -97,17 +98,4 @@ class Call {
         return "date: $this->calldate  src: $this->srcNumber";
     }
 
-    /*
-     * @param Call $other
-     * @return Call
-     */
-    public function merge($other){
-        $this->dstlist = array_merge($this->dstlist, $other->dstlist);
-        $this->status = $this->status ? $this->status : $other->status;
-        $this->dstNumber = $this->status ? $this->dstNumber : $other->dstNumber;
-        $this->did = $this->did ? $this->did : $other->did;
-        $this->duration = $this->duration ? $this->duration : $other->duration;
-        $this->recordingfile = $this->recordingfile ? $this->recordingfile : $other->recordingfile;
-        return $this;
-    }
 }

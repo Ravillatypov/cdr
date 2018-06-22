@@ -41,7 +41,7 @@ class Cdr
      * @param string $internal
      * @return bool
      */
-    private function loadCalls($from, $to, $external='0', $internal='0'){
+    private function loadCalls($from, $to, $external='', $internal=''){
         require_once ("call.class.php");
         require_once ("callgroup.class.php");
         if ($this->conn == NULL) return false;
@@ -65,16 +65,16 @@ class Cdr
         foreach ($records as $record) {
             $call = new Call();
             $call->loadFromArray($record);
-            //if ($external == '0' && $internal == '0'){
+            if (!$external && !$internal){
                 $this->calls[] = $call;
                 $this->allnumbers[$call->getExternalNumber()] = "ext";
-//            } elseif ($external != '0' && $external == $call->did) {
-//                $this->calls[] = $call;
-//                $this->allnumbers[$call->getExternalNumber()] = "ext";
-//            } elseif ($internal != '0' && $call->isInternalNumber($internal)) {
-//                $this->calls[] = $call;
-//                $this->allnumbers[$call->getExternalNumber()] = "ext";
-//            }
+            } elseif ($external && $external == $call->did) {
+                $this->calls[] = $call;
+                $this->allnumbers[$call->getExternalNumber()] = "ext";
+            } elseif ($internal && $call->isInternalNumber($internal)) {
+                $this->calls[] = $call;
+                $this->allnumbers[$call->getExternalNumber()] = "ext";
+            }
         }
         return true;
     }
@@ -106,6 +106,8 @@ class Cdr
             $group->loadCalls($this->calls);
             $callGroups[] = $group;
         }
+        asort($this->didnumbers);
+        asort($this->internals);
         $intertnals = $this->internals;
         $dids = $this->didnumbers;
         include(dirname(__DIR__) . "/templates/index.phtml");
