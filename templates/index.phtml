@@ -4,6 +4,7 @@
     <title>отчет по звонкам</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="img/favicon.png" />
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/popper.min.js"></script>
@@ -24,21 +25,21 @@
     </script>
 </head>
 <body>
-    <h3 class="text-center">Отчет по звонкам</h3>
+    <h3 class="text-center display-3">Отчет по звонкам</h3>
     <div class="container">
         <form action="" method="get">
             <div class="row">
-                <div class="form-group col-auto">
+                <div class="form-group col-lg-3 col-md-6">
                     <label class="col-form-label" for="from">С:</label>
                     <input type="date" name="from" class="form-control" id="from"
                            value="<?php echo  (isset($_GET['from'])) ? $_GET['from'] : date('Y-m-d');?>">
                 </div>
-                <div class="form-group col-auto">
+                <div class="form-group col-lg-3 col-md-6">
                     <label class="col-form-label" for="to">По:</label>
                     <input type="date" name="to" class="form-control" id="to"
                            value="<?php echo  (isset($_GET['to'])) ? $_GET['to'] : date('Y-m-d');?>">
                 </div>
-                <div class="col-auto">
+                <div class="col-lg-3 col-md-6">
                     <label class="col-form-label" for="ext">Внешний номер:</label>
                     <select class="custom-select" name="external" id="ext">
                         <option value="0">все</option>
@@ -50,7 +51,7 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-auto">
+                <div class="col-lg-3 col-md-6">
                     <label class="col-form-label" for="int">Внутренний номер:</label>
                     <select class="custom-select" name="internal" id="int">
                         <option value="0">все</option>
@@ -63,7 +64,7 @@
                     </select>
                 </div>
             </div>
-            <button type="submit" class="btn-primary btn btn-sm">показать</button>
+            <button type="submit" class="btn-primary btn btn-sm mt-2 mb-2">показать</button>
         </form>
     </div>
     <div class="container">
