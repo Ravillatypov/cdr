@@ -15,6 +15,7 @@ class Call {
     public $did = '';
     public $code = '';
     public $minlength = 0;
+    public $filesize = 0;
 
     /**
      * @param string $code
@@ -41,9 +42,15 @@ class Call {
                         $this->did = strlen($did) > strlen($this->did) ? $did : $this->did;
                     }
                 }
-
+                $BASE_DIR = dirname(dirname(__FILE__));
                 $this->calldate = (isset($record['calldate'])) ? $record['calldate'] : $this->calldate;
-                $this->recordingfile = strlen(trim($record['recordingfile'])) > strlen($this->recordingfile) ? trim($record['recordingfile']) : $this->recordingfile;
+                $path = "records/";
+                $time = strtotime($this->calldate);
+                $path .= date("Y/m/d/", $time);
+                $recfilename = $path . trim($record['recordingfile']);
+                $recfilesize = is_file($BASE_DIR . "/" . $recfilename) ? filesize($BASE_DIR . "/" . $recfilename) : 0;
+                $this->recordingfile = $recfilesize > $this->filesize ? $recfilename : $this->recordingfile;
+                $this->filesize = $recfilesize > $this->filesize ? $recfilesize : $this->filesize;
                 $this->status = ($record['billsec'] > 2) ? true : $this->status;
                 if ($this->status) {
                     $this->dstNumber = (isset($record['dst'])) ? $this->__getNumber($record['dst']) : $this->dstNumber;

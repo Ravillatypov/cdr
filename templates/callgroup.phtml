@@ -17,13 +17,6 @@
                 <th>Запись</th>
             </tr>
         <?php foreach ($group->calls as $call):?>
-            <?php
-                $path = "";
-                if ($call->recordingfile){
-                    $time = strtotime($call->calldate);
-                    $path = date("Y/m/d/", $time);
-                }
-            ?>
         <tr class="alert alert-<?php echo  ($call->status) ? 'success': 'warning'; ?>">
             <td><?php echo  $call->calldate; ?></td>
             <td><?php echo  $call->srcNumber; ?></td>
@@ -33,7 +26,7 @@
                 <td><?php echo  gmdate("i:s", $call->duration); ?></td>
                 <td>
                     <?php if ($call->recordingfile): ?>
-                    <a target="_blank" href="records/<?php echo  $path . $call->recordingfile;?>">
+                    <a target="_blank" href="<?php echo $call->recordingfile;?>">
                     <img src="img/play.png"
                          height="16" width="16">
                     </a>
